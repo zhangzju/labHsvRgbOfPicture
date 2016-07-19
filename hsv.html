@@ -36,6 +36,12 @@
                             <input type="range" name="points" min="0" max="50" id="Directionality" />
                             <label for="Regularity">Regularity: <span id="result-control-3">0.9756</span></label>
                             <input type="range" name="points" min="0" max="50" id="Regularity" />
+                            <label for="hue">hue: <span id="result-control-4">16.0512</span></label>
+                            <input type="range" name="points" min="0" max="50" id="hue" />
+                            <label for="Saturation">Saturation: <span id="result-control-5">16.0512</span></label>
+                            <input type="range" name="points" min="0" max="50" id="Saturation" />
+                            <label for="Value">Value: <span id="result-control-6">16.0512</span></label>
+                            <input type="range" name="points" min="0" max="50" id="Value" />
                         </div>
                     </div>
                     <canvas id="cs" style="display:none"></canvas>
@@ -75,19 +81,19 @@
             name: "img/Large_0260739.jpg",
             rgb: [13, 13, 14],
             lab: [3.65, 0.16, -0.45],
-            hsv: [16.0512, 9.6823, 0.9756]
+            hsv: [16.0512, 9.6823, 0.9756,0 ,0 ,0]
 
         }, {
             name: "img/Large_0267082.jpg",
             rgb: [210, 210, 204],
             lab: [84.04, -1.07, 2.95],
-            hsv: [19.5177, 12.6105, 0.9837]
+            hsv: [19.5177, 12.6105, 0.9837,3 ,18 ,9]
         },
         {
             name: "img/Large_0289578.jpg",
             rgb: [181, 65, 63],
             lab: [44.19, 46.86, 26.62],
-            hsv: [11.4969, 33.1375, 0.9704]
+            hsv: [11.4969, 33.1375, 0.9704,34 ,15 ,6]
         }
     ];
 
@@ -151,6 +157,12 @@
       $('#Directionality').val(labJson[index].hsv[1]);
       $('#result-control-3').html(labJson[index].hsv[2]);
       $('#Regularity').val(labJson[index].hsv[2]);
+      $('#result-control-3').html(labJson[index].hsv[3]);
+      $('#hue').val(labJson[index].hsv[3]);
+      $('#result-control-3').html(labJson[index].hsv[4]);
+      $('#Saturation').val(labJson[index].hsv[4]);
+      $('#result-control-3').html(labJson[index].hsv[5]);
+      $('#Value').val(labJson[index].hsv[5]);
 
     });
 
