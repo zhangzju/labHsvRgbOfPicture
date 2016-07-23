@@ -14,25 +14,35 @@
         <div class="row">
             <nav>
                 <div class="nav-wrapper">
-                    <a href="#" class="brand-logo">BearFashion</a>
+                    <a href="#" class="brand-logo">&nbsp BearFashion</a>
                     <ul id="nav-mobile" class="right hide-on-med-and-down">
-                        <li><a href="badges">标签</a></li>
-                        <li><a href="buttons">按钮</a></li>
-                        <li><a href="footer">页脚</a></li>
+                        <li><a href="badges">Documentation</a></li>
+                        <li><a href="buttons">Examples</a></li>
+                        <li><a href="footer">Data-Model</a></li>
                     </ul>
                 </div>
             </nav>
             <div class="col s6">
                 <div class="card">
                     <div class="card-image">
-                        <img src="0001.jpeg" id="choosen-01" class="choosen">
+                        <img src="0001.jpeg" id="choosen" class="choosen">
                         <div class="preview"></div>
                     </div>
                     <div class="card-content">
                         <div class="result">
-                            <span>HEX: #22142b</span>
-                            <span>RGB: rgb(34,20,43)</span>
+                            <form action="#">
+                                <div class="file-field input-field">
+                                    <div class="btn">
+                                        <input type="file" onchange="showPreview(this)" name="file" />
+                                    </div>
+                                    <input class="file-path validate" type="text" />
+                                </div>
+                            </form>
                         </div>
+                    </div>
+                    <div class="card-content">
+                        <label for="point_range">Please choose color1/color2</label>
+                        <input type="range" id="point_range" min="1.0" max="10.0" />
                     </div>
                     <canvas id="cs" style="display:none"></canvas>
                 </div>
@@ -44,6 +54,39 @@
                     </div>
                     <div class="card-content">
                         <a class="waves-effect waves-light btn-large" id="control-img">Debug</a>
+                        <a class="waves-effect waves-light btn-large" id="control-submit">Submit</a>
+                    </div>
+                    <div class="card-content">
+                        <a class="waves-effect waves-light btn-large" id="control-reset">Reset</a>
+                        <a class="waves-effect waves-light btn-large" id="control-select">Select</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col s1" style="text-align:left;line-height:22px;font-weight:bolder">Color 1:
+                <p id="color1-text">#000000</p>
+            </div>
+            <div class="col s1" style="background-color:black;height:66px" id="color1-show"></div>
+            <div class="col s1 offset-s1" style="text-align:left;line-height:22px;font-weight:bolder">Color 2:
+                <p id="color2-text">#000000</p>
+            </div>
+            <div class="col s1" style="background-color:black;height:66px" id="color2-show"></div>
+            <div class="col s6 offset-s1">
+                <div class="card-content">
+                    <div class="result">
+                        <label for="Coarseness">Coarseness: <span id="result-control-1">0.0</span></label>
+                        <input type="range" name="points" min="0" max="50" id="Coarseness" step="0.01" />
+                        <label for="Directionality">Directionality: <span id="result-control-2"> 0.0</span></label>
+                        <input type="range" name="points" min="0" max="100" id="Directionality" step="0.01" />
+                        <label for="Regularity">Regularity: <span id="result-control-3">0.00</span></label>
+                        <input type="range" name="points" min="0" max="1" id="Regularity" step="0.001" />
+                        <label for="hue">Hue: <span id="result-control-4">0.0</span></label>
+                        <input type="range" name="points" min="0" max="360" id="Hue" step="0.01" />
+                        <label for="Saturation">Saturation: <span id="result-control-5">0.0</span></label>
+                        <input type="range" name="points" min="0" max="100" id="Saturation" step="0.01" />
+                        <label for="Value">Value: <span id="result-control-6">0.0</span></label>
+                        <input type="range" name="points" min="0" max="100" id="Value" step="0.01" />
                     </div>
                 </div>
             </div>
@@ -54,14 +97,20 @@
     <script src="http://cdn.bootcss.com/materialize/0.97.6/js/materialize.min.js"></script>
     <script>
     // vars
-    var img = _('#choosen-01'),
+    var img = _('#choosen'),
         canvas = _('#cs'),
         result = _('.result'),
         preview = _('.preview'),
         button = _('#control-img'),
+        submit = _('#control-submit'),
         x = '',
         y = '';
 
+    var index = 0;
+    var rgb_temp = "#000000";
+    var rgb_get = "#000000";
+    var lab_temp = [0, 0, 0];
+    var lab_get = [0, 0, 0];
 
     var fabricJson = {
         "white": {
@@ -75,8 +124,146 @@
         }
     };
 
+    var labJson = [{
+        name: "img/Large_0260739.jpg",
+        points_all: [1470000],
+        rgb: [8, 8, 10],
+        lab: [2.2747, 0.2532, -0.6044],
+        hsv: [0.6775, 0.1659, 0.0384],
+        points1: [86212],
+        rgb2: [14, 13, 15],
+        lab2: [3.7999, 0.4175, -0.9479],
+        hsv2: [0.6826, 0.1326, 0.0602],
+        points2: [84964],
+        Coarseness: [16.0512],
+        Contrast: [8.4537],
+        Directionality: [9.6823],
+        Regularity: [0.9776]
+    }, {
+        name: "img/Large_0266433.jpg",
+        points_all: [1470000],
+        rgb: [24, 113, 128],
+        lab: [43.7086, -19.7479, -15.2444],
+        hsv: [0.5232, 0.8152, 0.5015],
+        points1: [71428],
+        rgb2: [17, 105, 120],
+        lab2: [40.5385, -18.6666, -15.2952],
+        hsv2: [0.5241, 0.8605, 0.4703],
+        points2: [68659],
+        Coarseness: [10.7229],
+        Contrast: [14.8827],
+        Directionality: [6.3413],
+        Regularity: [0.9966]
+    }, {
+        name: "img/Large_0266440.jpg",
+        points_all: [1470000],
+        rgb: [110, 2, 6],
+        lab: [21.6060, 42.8629, 30.3294],
+        hsv: [0.9942, 0.9801, 0.4332],
+        points1: [81632],
+        rgb2: [113, 7, 10],
+        lab2: [22.5601, 42.6242, 29.7247],
+        hsv2: [0.9944, 0.9400, 0.4426],
+        points2: [79687],
+        Coarseness: [11.4931],
+        Contrast: [3.2829],
+        Directionality: [6.2921],
+        Regularity: [0.9963]
+    }, {
+        name: "img/Large_0266451.jpg",
+        points_all: [3000000],
+        rgb: [127, 6, 21],
+        lab: [25.9136, 47.1831, 28.5824],
+        hsv: [0.9796, 0.9536, 0.4992],
+        points1: [208935],
+        rgb2: [122, 6, 19],
+        lab2: [24.7904, 45.7596, 28.0843],
+        hsv2: [0.9812, 0.9511, 0.4801],
+        points2: [165742],
+        Coarseness: [15.2370],
+        Contrast: [1.5169],
+        Directionality: [17.6848],
+        Regularity: [0.9702]
+    }, {
+        name: "img/Large_0266458.jpg",
+        points_all: [3000000],
+        rgb: [60, 60, 63],
+        lab: [25.5180, 0.6258, -1.5546],
+        hsv: [0.6727, 0.0406, 0.2463],
+        points1: [135565],
+        rgb2: [44, 44, 47],
+        lab2: [18.2624, 0.5968, -1.5502],
+        hsv2: [0.6687, 0.0515, 0.1835],
+        points2: [126339],
+        Coarseness: [14.2740],
+        Contrast: [16.8539],
+        Directionality: [19.2142],
+        Regularity: [0.9725]
+    }, {
+        name: "img/Large_0267082.jpg",
+        points_all: [1470000],
+        rgb: [226, 225, 219],
+        lab: [89.5268, -0.8346, 2.9520],
+        hsv: [0.1510, 0.0288, 0.8858],
+        points1: [116519],
+        rgb2: [214, 214, 208],
+        lab2: [85.3395, -0.8933, 2.8997],
+        hsv2: [0.1557, 0.0289, 0.8389],
+        points2: [110859],
+        Coarseness: [19.5177],
+        Contrast: [13.5676],
+        Directionality: [12.6105],
+        Regularity: [0.9825]
+    }, {
+        name: "img/Large_0260739.jpg",
+        points_all: [1470000],
+        rgb: [8, 8, 10],
+        lab: [2.2747, 0.2532, -0.6044],
+        hsv: [0.6775, 0.1659, 0.0384],
+        points1: [86212],
+        rgb2: [14, 13, 15],
+        lab2: [3.7999, 0.4175, -0.9479],
+        hsv2: [0.6826, 0.1326, 0.0602],
+        points2: [84964],
+        Coarseness: [16.0512],
+        Contrast: [8.4537],
+        Directionality: [9.6823],
+        Regularity: [0.9776]
+    }];
+
+    $("#Coarseness").change(function(){
+        $("#result-control-1").html($("#Coarseness").val());
+    });
+
+    $("#Directionality").change(function(){
+        $("#result-control-2").html($("#Directionality").val());
+    });
+
+    $("#Regularity").change(function(){
+        $("#result-control-3").html($("#Regularity").val());
+    });
+
+    $("#Hue").change(function(){
+        $("#result-control-4").html($("#Hue").val());
+    });
+
+    $("#Saturation").change(function(){
+        $("#result-control-5").html($("#Saturation").val());
+    });
+
+    $("#Value").change(function(){
+        $("#result-control-6").html($("#Value").val());
+    });
+
+    $("#image-upload").change(function() {
+        alert($('#image-upload').val());
+    });
+
+
     button.addEventListener('click', function(argument) {
-        alert(fabricJson.white.name);
+        // alert(lab_get+" : "+lab_temp);
+        var point_range = $("#point_range").val();
+        alert(point_range);
     }, false);
 
     // click function
@@ -96,41 +283,195 @@
             var p = canvas.getContext('2d')
                 .getImageData(x, y, 1, 1).data;
             // show info
-            result.innerHTML = '<span>HEX: ' + rgbToHex(p[0], p[1], p[2]) + '</span>' +
-                '<span>RGB:  rgb(' +
-                p[0] + ',' +
-                p[1] + ',' +
-                p[2] + ')</span>';
+            // result.innerHTML = '<span>HEX: ' + rgbToHex(p[0], p[1], p[2]) + '</span>' +
+            //     '<span>RGB:  rgb(' +
+            //     p[0] + ',' +
+            //     p[1] + ',' +
+            //     p[2] + ')</span>';
 
             // add background in body
-            document.body.style.background = rgbToHex(p[0], p[1], p[2]);
+
+            rgb_get = rgbToHex(p[0], p[1], p[2]);
+
+            lab_temp = lab_get;
+            lab_get = rgb2lab([p[0], p[1], p[2]]);
+
+            // handle_select_one(lab_temp, lab_get);
+            // alert(lab);
+            // changeFabric(p[0], p[1], p[2]);
+            // changeFabric2(lab);
+            $("#color2-show").css("background-color", rgb_temp);
+            $("#color1-show").css("background-color", rgb_get);
+            $("#color2-text").text(rgb_temp);
+            $("#color1-text").text(rgb_get);
+            rgb_temp = rgb_get;
+            // alert(rgb_temp);
         });
     }, false);
 
-    // preview function mousemove
-    img.addEventListener('mousemove', function(e) {
-        // chrome
-        if (e.offsetX) {
-            x = e.offsetX;
-            y = e.offsetY;
+    //first commit
+    $('#control-submit').unbind().bind('click', function() {
+        // alert(lab_get+" : "+lab_temp);
+        var point_range = $('#point_range').val();
+        var point_index = 0;
+        for (var i = labJson.length - 1; i >= 0; i--) {
+            // alert(deltaE(lab_temp, labJson[i].lab)+"--"+ deltaE(lab_get, labJson[i].lab2));
+            if (deltaE(lab_temp, labJson[i].lab) < 30 && deltaE(lab_get, labJson[i].lab2) < 30) {
+                // alert(point_range+"--"+point_index+"--"+i);
+                // point_change(point_range, point_index, i);
+                // var deltaA = Math.abs(labJson[i].points1 / labJson[i].points2 - point_range);
+                // var deltaB = Math.abs(labJson[point_index].points1 / labJson[point_index].points2 - point_range);
+                // alert(deltaA + "--" + deltaB);
+                if (Math.abs(labJson[i].points1 / labJson[i].points2 - point_range) < Math.abs(labJson[point_index].points1 / labJson[point_index].points2 - point_range)) {
+                    point_index = i;
+                }
+            }
         }
-        // firefox
-        else if (e.layerX) {
-            x = e.layerX;
-            y = e.layerY;
+
+        if (point_index === 0) {
+            show_not_found();
+        } else {
+            change_fabric(point_index);
+            $("#Coarseness").val(labJson[point_index].Coarseness);
+            $("#Regularity").val(labJson[point_index].Regularity);
+            $("#Directionality").val(labJson[point_index].Directionality);
+            $("#Hue").val(labJson[point_index].hsv[0]);
+            $("#Saturation").val(labJson[point_index].hsv[1]);
+            $("#Value").val(labJson[point_index].hsv[2]);
+            flush_range();
         }
+    });
 
-        useCanvas(canvas, img, function() {
+    $('#control-reset').unbind().bind('click', function() {
+        $("#color2-show").css("background-color", '#000000');
+        $("#color1-show").css("background-color", '#000000');
+        $("#color2-text").text('#000000');
+        $("#color1-text").text('#000000');
+        $("#Coarseness").val(0);
+        $("#Regularity").val(0);
+        $("#Directionality").val(0);
+        $("#Hue").val(0);
+        $("#Saturation").val(0);
+        $("#Value").val(0);
+        rgb_temp = "#000000";
+        rgb_get = "#000000";
+        lab_temp = [0, 0, 0];
+        lab_get = [0, 0, 0];
 
-            // get image data
-            var p = canvas.getContext('2d')
-                .getImageData(x, y, 1, 1).data;
-            // show preview color
-            preview.style.background = rgbToHex(p[0], p[1], p[2]);
-            changeFabric(p[0], p[1], p[2])
-        });
-    }, false);
+    });
 
+    $('#control-select').unbind().bind('click', function() {
+        var Coarseness = $('#Coarseness').val();
+        var Regularity = $('#Regularity').val();
+        var Directionality = $('#Directionality').val();
+        var Hue = $('#Hue').val();
+        var Saturation = $('#Saturation').val();
+        var Value = $('#Value').val();
+        // alert(Coarseness+'-'+Regularity+'-'+Directionality+'-'+Hue);
+        var euler_index = 100;
+        for (var i = labJson.length - 1; i >= 0; i--) {
+            var euler_distance = euler(Coarseness, labJson[i].Coarseness, Regularity, labJson[i].Regularity, Directionality, labJson[i].Directionality, Hue, labJson[i].hsv[0], Saturation, labJson[i].hsv[1], Value, labJson[i].hsv[2]);
+            if (euler_distance < euler_index) {
+                euler_index = euler_distance;
+                change_fabric(i);
+            }
+        }
+    })
+
+    function showPreview(source) {
+        var file = source.files[0];
+        if (window.FileReader) {
+            var fr = new FileReader();
+            fr.onloadend = function(e) {
+                img.src = e.target.result;
+            };
+            fr.readAsDataURL(file);
+        }
+    }
+
+    //Calculate the euler distance
+    function euler(a, b, c, d, e, f, g, h, i, j, k, l) {
+        return Math.sqrt((a - b) * (a - b) + (c - d) * (c - d) + (e - f) * (e - f) + (g - h) * (g - h) + (i - j) * (i - j) + (k - l) * (k - l))
+    }
+
+    //handle point_range change
+    function point_change(point, index, target) {
+        if (Math.abs(labJson[target].points1 / labJson[target].points2 - point) < Math.abs(labJson[index].points1 / labJson[index].points2 - point)) {
+            var deltaA = Math.abs(labJson[target].points1 / labJson[target].points2 - point);
+            var deltaB = Math.abs(labJson[index].points1 / labJson[index].points2 - point);
+            alert(deltaA + "--" + deltaB);
+            index = target;
+        }
+        return 0;
+    }
+
+    function show_not_found() {
+        Materialize.toast('The selected conditions do not match. Please refine your search!', 3000);
+    }
+
+    //handle submit
+    function rgb2lab(rgb) {
+        var r = rgb[0] / 255,
+            g = rgb[1] / 255,
+            b = rgb[2] / 255,
+            x, y, z;
+
+        r = (r > 0.04045) ? Math.pow((r + 0.055) / 1.055, 2.4) : r / 12.92;
+        g = (g > 0.04045) ? Math.pow((g + 0.055) / 1.055, 2.4) : g / 12.92;
+        b = (b > 0.04045) ? Math.pow((b + 0.055) / 1.055, 2.4) : b / 12.92;
+
+        x = (r * 0.4124 + g * 0.3576 + b * 0.1805) / 0.95047;
+        y = (r * 0.2126 + g * 0.7152 + b * 0.0722) / 1.00000;
+        z = (r * 0.0193 + g * 0.1192 + b * 0.9505) / 1.08883;
+
+        x = (x > 0.008856) ? Math.pow(x, 1 / 3) : (7.787 * x) + 16 / 116;
+        y = (y > 0.008856) ? Math.pow(y, 1 / 3) : (7.787 * y) + 16 / 116;
+        z = (z > 0.008856) ? Math.pow(z, 1 / 3) : (7.787 * z) + 16 / 116;
+
+        return [(116 * y) - 16, 500 * (x - y), 200 * (y - z)]
+    }
+
+    function deltaE(labA, labB) {
+        var deltaL = labA[0] - labB[0];
+        var deltaA = labA[1] - labB[1];
+        var deltaB = labA[2] - labB[2];
+        var c1 = Math.sqrt(labA[1] * labA[1] + labA[2] * labA[2]);
+        var c2 = Math.sqrt(labB[1] * labB[1] + labB[2] * labB[2]);
+        var deltaC = c1 - c2;
+        var deltaH = deltaA * deltaA + deltaB * deltaB - deltaC * deltaC;
+        deltaH = deltaH < 0 ? 0 : Math.sqrt(deltaH);
+        var sc = 1.0 + 0.045 * c1;
+        var sh = 1.0 + 0.015 * c1;
+        var deltaLKlsl = deltaL / (1.0);
+        var deltaCkcsc = deltaC / (sc);
+        var deltaHkhsh = deltaH / (sh);
+        var i = deltaLKlsl * deltaLKlsl + deltaCkcsc * deltaCkcsc + deltaHkhsh * deltaHkhsh;
+        return i < 0 ? 0 : Math.sqrt(i);
+    }
+
+
+    function changeFabric2(lab1) {
+        var delta = deltaE(lab1, labJson[0].lab);
+        // alert(delta);
+        for (var o in labJson) {
+            var deltaT = deltaE(lab1, labJson[o].lab);
+            if (deltaT < delta) {
+                index = o;
+                // alert("picture changed!");
+            }
+        }
+        $('#showFabric').attr("src", labJson[index].name);
+        var height = $("#choosen").height();
+        // alert(height);
+        $('#showFabric').attr("height", height);
+    }
+
+    function change_fabric(index) {
+        $('#showFabric').attr("src", labJson[index].name);
+        var height = $("#choosen").height();
+        // alert(height);
+        $('#showFabric').attr("height", height);
+    }
 
     // canvas function
     function useCanvas(el, image, callback) {
@@ -146,7 +487,17 @@
         return document.querySelector(el);
     };
 
-    // convert rgba to hex 
+    
+    function flush_range(argument) {
+        $("#result-control-1").html($("#Coarseness").val());
+        $("#result-control-2").html($("#Directionality").val());
+        $("#result-control-3").html($("#Regularity").val());
+        $("#result-control-4").html($("#Hue").val());
+        $("#result-control-5").html($("#Saturation").val());
+        $("#result-control-6").html($("#Value").val());
+    }
+
+    // convert rgba to hex
     // http://stackoverflow.com/questions/5623838/rgb-to-hex-and-hex-to-rgb
     function componentToHex(c) {
         var hex = c.toString(16);
